@@ -3,6 +3,8 @@ import { ImageData, QuadrantImage, SurroundingImages, FinalImage } from '@/types
 
 export const TARGET_WIDTH = 1214;
 export const TARGET_HEIGHT = 683;
+export const FINAL_IMAGE_WIDTH = 1214;
+export const FINAL_IMAGE_HEIGHT = 2048;
 
 export function validateImageAspectRatio(file: File): Promise<boolean> {
   return new Promise((resolve) => {
@@ -149,84 +151,107 @@ export function createFinalImages(
         return;
       }
 
-      canvas.width = TARGET_WIDTH;
-      canvas.height = TARGET_HEIGHT;
+      canvas.width = FINAL_IMAGE_WIDTH;
+      canvas.height = FINAL_IMAGE_HEIGHT;
       
-      // If we have surrounding images, create a composite
-      if (surrounding.top || surrounding.bottom) {
-        const hasTop = !!surrounding.top;
-        const hasBottom = !!surrounding.bottom;
-        
-        if (hasTop && hasBottom) {
-          // Three-part composition: top image, quadrant, bottom image
-          const sectionHeight = TARGET_HEIGHT / 3;
+      // Always create a three-part composition for Twitter tiles
+      const sectionHeight = TARGET_HEIGHT; // Each section is 683px tall
+      
+      if (surrounding.top && surrounding.bottom) {
+        // Three-part composition: top image, quadrant, bottom image
+        Promise.all([
+          loadImageFromData(surrounding.top),
+          loadImageFromBlob(quadrant.blob),
+          loadImageFromData(surrounding.bottom)
+        ]).then(([topImg, quadImg, bottomImg]) => {
+          // Draw top image (0 to 683px)
+          ctx.drawImage(topImg, 0, 0, FINAL_IMAGE_WIDTH, sectionHeight);
+          // Draw quadrant in middle (683 to 1366px)
+          ctx.drawImage(quadImg, 0, sectionHeight, FINAL_IMAGE_WIDTH, sectionHeight);
+          // Draw bottom image (1366 to 2048px)
+          ctx.drawImage(bottomImg, 0, sectionHeight * 2, FINAL_IMAGE_WIDTH, sectionHeight);
           
-          Promise.all([
-            loadImageFromData(surrounding.top!),
-            loadImageFromBlob(quadrant.blob),
-            loadImageFromData(surrounding.bottom!)
-          ]).then(([topImg, quadImg, bottomImg]) => {
-            // Draw top image
-            ctx.drawImage(topImg, 0, 0, TARGET_WIDTH, sectionHeight);
-            // Draw quadrant in middle
-            ctx.drawImage(quadImg, 0, sectionHeight, TARGET_WIDTH, sectionHeight);
-            // Draw bottom image
-            ctx.drawImage(bottomImg, 0, sectionHeight * 2, TARGET_WIDTH, sectionHeight);
-            
-            canvas.toBlob((blob) => {
-              if (blob) {
-                finalImages.push({
-                  blob,
-                  name: `0${index + 1}_${quadrant.name}.jpg`,
-                  order: index + 1,
-                  label: `0${index + 1}_${quadrant.name}.jpg`
-                });
-                
-                processedCount++;
-                if (processedCount === 4) {
-                  resolve(finalImages);
-                }
+          canvas.toBlob((blob) => {
+            if (blob) {
+              finalImages.push({
+                blob,
+                name: `0${index + 1}_${quadrant.name}.jpg`,
+                order: index + 1,
+                label: `0${index + 1}_${quadrant.name}.jpg`
+              });
+              
+              processedCount++;
+              if (processedCount === 4) {
+                resolve(finalImages);
               }
-            }, 'image/jpeg', 0.9);
-          }).catch(reject);
-        } else {
-          // Two-part composition
-          const halfHeight = TARGET_HEIGHT / 2;
-          const surroundingImg = hasTop ? surrounding.top! : surrounding.bottom!;
-          
-          Promise.all([
-            loadImageFromData(surroundingImg),
-            loadImageFromBlob(quadrant.blob)
-          ]).then(([surroundImg, quadImg]) => {
-            if (hasTop) {
-              ctx.drawImage(surroundImg, 0, 0, TARGET_WIDTH, halfHeight);
-              ctx.drawImage(quadImg, 0, halfHeight, TARGET_WIDTH, halfHeight);
-            } else {
-              ctx.drawImage(quadImg, 0, 0, TARGET_WIDTH, halfHeight);
-              ctx.drawImage(surroundImg, 0, halfHeight, TARGET_WIDTH, halfHeight);
             }
-            
-            canvas.toBlob((blob) => {
-              if (blob) {
-                finalImages.push({
-                  blob,
-                  name: `0${index + 1}_${quadrant.name}.jpg`,
-                  order: index + 1,
-                  label: `0${index + 1}_${quadrant.name}.jpg`
-                });
-                
-                processedCount++;
-                if (processedCount === 4) {
-                  resolve(finalImages);
-                }
+          }, 'image/jpeg', 0.9);
+        }).catch(reject);
+      } else if (surrounding.top) {
+        // Two-part composition: top image, quadrant, then duplicate quadrant for bottom
+        Promise.all([
+          loadImageFromData(surrounding.top),
+          loadImageFromBlob(quadrant.blob)
+        ]).then(([topImg, quadImg]) => {
+          // Draw top image (0 to 683px)
+          ctx.drawImage(topImg, 0, 0, FINAL_IMAGE_WIDTH, sectionHeight);
+          // Draw quadrant in middle (683 to 1366px)
+          ctx.drawImage(quadImg, 0, sectionHeight, FINAL_IMAGE_WIDTH, sectionHeight);
+          // Draw quadrant again at bottom (1366 to 2048px)
+          ctx.drawImage(quadImg, 0, sectionHeight * 2, FINAL_IMAGE_WIDTH, sectionHeight);
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              finalImages.push({
+                blob,
+                name: `0${index + 1}_${quadrant.name}.jpg`,
+                order: index + 1,
+                label: `0${index + 1}_${quadrant.name}.jpg`
+              });
+              
+              processedCount++;
+              if (processedCount === 4) {
+                resolve(finalImages);
               }
-            }, 'image/jpeg', 0.9);
-          }).catch(reject);
-        }
+            }
+          }, 'image/jpeg', 0.9);
+        }).catch(reject);
+      } else if (surrounding.bottom) {
+        // Two-part composition: quadrant, then bottom image, then duplicate quadrant
+        Promise.all([
+          loadImageFromBlob(quadrant.blob),
+          loadImageFromData(surrounding.bottom)
+        ]).then(([quadImg, bottomImg]) => {
+          // Draw quadrant at top (0 to 683px)
+          ctx.drawImage(quadImg, 0, 0, FINAL_IMAGE_WIDTH, sectionHeight);
+          // Draw quadrant in middle (683 to 1366px)
+          ctx.drawImage(quadImg, 0, sectionHeight, FINAL_IMAGE_WIDTH, sectionHeight);
+          // Draw bottom image (1366 to 2048px)
+          ctx.drawImage(bottomImg, 0, sectionHeight * 2, FINAL_IMAGE_WIDTH, sectionHeight);
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              finalImages.push({
+                blob,
+                name: `0${index + 1}_${quadrant.name}.jpg`,
+                order: index + 1,
+                label: `0${index + 1}_${quadrant.name}.jpg`
+              });
+              
+              processedCount++;
+              if (processedCount === 4) {
+                resolve(finalImages);
+              }
+            }
+          }, 'image/jpeg', 0.9);
+        }).catch(reject);
       } else {
-        // Just the quadrant
+        // Just the quadrant - repeat it three times to fill the canvas
         loadImageFromBlob(quadrant.blob).then((quadImg) => {
-          ctx.drawImage(quadImg, 0, 0, TARGET_WIDTH, TARGET_HEIGHT);
+          // Draw quadrant three times to fill the 2048px height
+          ctx.drawImage(quadImg, 0, 0, FINAL_IMAGE_WIDTH, sectionHeight);
+          ctx.drawImage(quadImg, 0, sectionHeight, FINAL_IMAGE_WIDTH, sectionHeight);
+          ctx.drawImage(quadImg, 0, sectionHeight * 2, FINAL_IMAGE_WIDTH, sectionHeight);
           
           canvas.toBlob((blob) => {
             if (blob) {

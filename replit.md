@@ -81,6 +81,11 @@ This is a React TypeScript web application that helps users create expandable Tw
 - **Future**: PostgreSQL with Drizzle ORM (infrastructure ready)
 - **Schema**: User management schema defined but not yet implemented
 
+## Recent Changes
+- June 24, 2025: Updated final image dimensions to 1214×2048px for proper Twitter tile format
+- June 24, 2025: Implemented three-section vertical stacking (683px each) for expandable tiles
+- June 24, 2025: Initial setup and core functionality complete
+
 ## Changelog
 - June 24, 2025. Initial setup
 

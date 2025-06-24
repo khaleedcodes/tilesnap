@@ -89,7 +89,7 @@ export default function ImagePreview({ finalImages, onPrevious, onStartOver }: I
                 />
               </div>
               <div className="mt-2 text-xs text-gray-500 text-center">
-                1214 × 683px • Ready for Twitter
+                1214 × 2048px • Ready for Twitter
               </div>
             </div>
           ))}

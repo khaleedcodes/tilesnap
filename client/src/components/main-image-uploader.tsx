@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { ImageData, QuadrantImage } from '@/types/image-types';
 import { processImageFile, validateImageAspectRatio, splitImageIntoQuadrants } from '@/utils/image-processor';
 import { useToast } from '@/hooks/use-toast';
+import ImageCropper from '@/components/image-cropper';
 
 interface MainImageUploaderProps {
   onImageProcessed: (imageData: ImageData, quadrants: QuadrantImage[]) => void;
@@ -18,6 +19,8 @@ export default function MainImageUploader({
   quadrants
 }: MainImageUploaderProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [tempImageForCrop, setTempImageForCrop] = useState<ImageData | null>(null);
   const { toast } = useToast();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -52,22 +55,15 @@ export default function MainImageUploader({
       if (!isValidAspectRatio) {
         toast({
           title: "Aspect ratio warning",
-          description: "For best results, use a 16:9 aspect ratio image. We'll crop to fit.",
+          description: "For best results, use a 16:9 aspect ratio image. You can crop to adjust.",
           variant: "default"
         });
       }
 
-      // Process the image
+      // Process the image and show cropper
       const imageData = await processImageFile(file);
-      const imageQuadrants = await splitImageIntoQuadrants(imageData);
-      
-      onImageProcessed(imageData, imageQuadrants);
-      
-      toast({
-        title: "Image processed successfully",
-        description: "Your main image has been split into quadrants",
-        variant: "default"
-      });
+      setTempImageForCrop(imageData);
+      setShowCropper(true);
     } catch (error) {
       console.error('Error processing image:', error);
       toast({
@@ -78,7 +74,44 @@ export default function MainImageUploader({
     } finally {
       setIsProcessing(false);
     }
-  }, [onImageProcessed, toast]);
+  }, [toast]);
+
+  const handleCropComplete = async (croppedImageData: ImageData) => {
+    setIsProcessing(true);
+    try {
+      const imageQuadrants = await splitImageIntoQuadrants(croppedImageData);
+      onImageProcessed(croppedImageData, imageQuadrants);
+      
+      toast({
+        title: "Image processed successfully",
+        description: "Your main image has been cropped and split into quadrants",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error processing cropped image:', error);
+      toast({
+        title: "Processing failed",
+        description: "Failed to process the cropped image. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+    setTempImageForCrop(null);
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setTempImageForCrop(null);
+    setIsProcessing(false);
+  };
+
+  const handleEditMainImage = () => {
+    if (mainImage) {
+      setTempImageForCrop(mainImage);
+      setShowCropper(true);
+    }
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -159,12 +192,22 @@ export default function MainImageUploader({
               <div className="bg-gray-100 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-semibold text-gray-900">Main Image Preview</h4>
-                  <button
-                    onClick={removeMainImage}
-                    className="text-red-500 hover:text-red-700 text-sm transition-colors"
-                  >
-                    <i className="fas fa-trash mr-1"></i>Remove
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleEditMainImage}
+                      className="text-blue-500 hover:text-blue-700 text-sm transition-colors"
+                      title="Crop image"
+                    >
+                      <i className="fas fa-crop mr-1"></i>Crop
+                    </button>
+                    <button
+                      onClick={removeMainImage}
+                      className="text-red-500 hover:text-red-700 text-sm transition-colors"
+                      title="Remove image"
+                    >
+                      <i className="fas fa-trash mr-1"></i>Remove
+                    </button>
+                  </div>
                 </div>
                 <img
                   src={mainImage.src}
@@ -212,6 +255,15 @@ export default function MainImageUploader({
           <i className="fas fa-arrow-right ml-2"></i>
         </button>
       </div>
+
+      {tempImageForCrop && (
+        <ImageCropper
+          isOpen={showCropper}
+          onClose={handleCropCancel}
+          imageData={tempImageForCrop}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }

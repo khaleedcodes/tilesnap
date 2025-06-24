@@ -82,6 +82,8 @@ This is a React TypeScript web application that helps users create expandable Tw
 - **Schema**: User management schema defined but not yet implemented
 
 ## Recent Changes
+- June 24, 2025: Added interactive image cropping for surrounding images with 16:9 aspect ratio lock
+- June 24, 2025: Implemented automatic crop-on-upload and manual re-crop functionality
 - June 24, 2025: Updated final image dimensions to 1214×2048px for proper Twitter tile format
 - June 24, 2025: Implemented three-section vertical stacking (683px each) for expandable tiles
 - June 24, 2025: Initial setup and core functionality complete

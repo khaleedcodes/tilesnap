@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { ImageData, SurroundingImages } from '@/types/image-types';
 import { processImageFile } from '@/utils/image-processor';
 import { useToast } from '@/hooks/use-toast';
+import ImageCropper from '@/components/image-cropper';
 
 interface SurroundingImagesUploaderProps {
   surroundingImages: SurroundingImages;
@@ -21,6 +22,8 @@ interface ImageSlotProps {
 
 function ImageSlot({ position, slot, image, onImageUpload, onImageRemove }: ImageSlotProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [tempImageForCrop, setTempImageForCrop] = useState<ImageData | null>(null);
   const { toast } = useToast();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -49,7 +52,9 @@ function ImageSlot({ position, slot, image, onImageUpload, onImageRemove }: Imag
 
     try {
       const imageData = await processImageFile(file);
-      onImageUpload(position, slot, imageData);
+      // Show cropper first for user to adjust if needed
+      setTempImageForCrop(imageData);
+      setShowCropper(true);
     } catch (error) {
       console.error('Error processing image:', error);
       toast({
@@ -60,7 +65,25 @@ function ImageSlot({ position, slot, image, onImageUpload, onImageRemove }: Imag
     } finally {
       setIsProcessing(false);
     }
-  }, [position, slot, onImageUpload, toast]);
+  }, [position, slot, toast]);
+
+  const handleCropComplete = (croppedImageData: ImageData) => {
+    onImageUpload(position, slot, croppedImageData);
+    setTempImageForCrop(null);
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setTempImageForCrop(null);
+    setIsProcessing(false);
+  };
+
+  const handleEditImage = () => {
+    if (image) {
+      setTempImageForCrop(image);
+      setShowCropper(true);
+    }
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -72,49 +95,81 @@ function ImageSlot({ position, slot, image, onImageUpload, onImageRemove }: Imag
 
   if (image) {
     return (
-      <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-        <div className="flex items-center space-x-3">
-          <div className="w-16 h-9 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-            <img
-              src={image.src}
-              alt={`${slot} image preview`}
-              className="w-full h-full object-cover"
-            />
+      <>
+        <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+          <div className="flex items-center space-x-3">
+            <div className="w-16 h-9 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+              <img
+                src={image.src}
+                alt={`${slot} image preview`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">{image.name}</p>
+              <p className="text-xs text-gray-500">{slot} image</p>
+            </div>
+            <div className="flex space-x-1">
+              <button
+                onClick={handleEditImage}
+                className="text-blue-500 hover:text-blue-700 p-1 transition-colors"
+                title="Crop image"
+              >
+                <i className="fas fa-crop text-sm"></i>
+              </button>
+              <button
+                onClick={() => onImageRemove(position, slot)}
+                className="text-gray-400 hover:text-red-500 p-1 transition-colors"
+                title="Remove image"
+              >
+                <i className="fas fa-times text-sm"></i>
+              </button>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{image.name}</p>
-            <p className="text-xs text-gray-500">{slot} image</p>
-          </div>
-          <button
-            onClick={() => onImageRemove(position, slot)}
-            className="text-gray-400 hover:text-red-500 p-1 transition-colors"
-          >
-            <i className="fas fa-times"></i>
-          </button>
         </div>
-      </div>
+        
+        {tempImageForCrop && (
+          <ImageCropper
+            isOpen={showCropper}
+            onClose={handleCropCancel}
+            imageData={tempImageForCrop}
+            onCropComplete={handleCropComplete}
+          />
+        )}
+      </>
     );
   }
 
   return (
-    <div
-      {...getRootProps()}
-      className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer ${
-        isDragActive
-          ? 'border-blue-300 bg-blue-50'
-          : 'border-gray-200 hover:border-blue-300'
-      }`}
-    >
-      <input {...getInputProps()} />
-      {isProcessing ? (
-        <i className="fas fa-spinner fa-spin text-blue-400 mb-2"></i>
-      ) : (
-        <i className="fas fa-plus text-gray-400 mb-2"></i>
+    <>
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer ${
+          isDragActive
+            ? 'border-blue-300 bg-blue-50'
+            : 'border-gray-200 hover:border-blue-300'
+        }`}
+      >
+        <input {...getInputProps()} />
+        {isProcessing ? (
+          <i className="fas fa-spinner fa-spin text-blue-400 mb-2"></i>
+        ) : (
+          <i className="fas fa-plus text-gray-400 mb-2"></i>
+        )}
+        <p className="text-sm text-gray-500">
+          {isProcessing ? 'Processing...' : `${slot} image`}
+        </p>
+      </div>
+      
+      {tempImageForCrop && (
+        <ImageCropper
+          isOpen={showCropper}
+          onClose={handleCropCancel}
+          imageData={tempImageForCrop}
+          onCropComplete={handleCropComplete}
+        />
       )}
-      <p className="text-sm text-gray-500">
-        {isProcessing ? 'Processing...' : `${slot} image`}
-      </p>
-    </div>
+    </>
   );
 }
 

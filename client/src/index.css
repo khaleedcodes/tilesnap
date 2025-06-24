@@ -1,8 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Comic+Neue:wght@300;400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  /* TileSnap cartoon color palette */
+  --tilesnap-yellow: #FFD700;
+  --tilesnap-coral: #FF6B6B;
+  --tilesnap-teal: #4ECDC4;
+  --tilesnap-blue: #45B7D1;
+  --tilesnap-mint: #96CEB4;
+  --tilesnap-lavender: #A8E6CF;
+  --tilesnap-peach: #FFEAA7;
+  --tilesnap-pink: #FD79A8;
+  --tilesnap-purple: #A29BFE;
+  --tilesnap-orange: #FF9F43;
+  
+  /* Base theme colors */
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(20, 14.3%, 4.1%);
   --muted: hsl(60, 4.8%, 95.9%);
@@ -13,16 +28,16 @@
   --card-foreground: hsl(20, 14.3%, 4.1%);
   --border: hsl(20, 5.9%, 90%);
   --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
+  --primary: hsl(45, 100%, 50%);
+  --primary-foreground: hsl(26, 83.3%, 14.1%);
   --secondary: hsl(60, 4.8%, 95.9%);
   --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
+  --accent: hsl(51, 100%, 87%);
   --accent-foreground: hsl(24, 9.8%, 10%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
+  --ring: hsl(45, 100%, 50%);
+  --radius: 1rem;
 }
 
 .dark {
@@ -36,8 +51,8 @@
   --card-foreground: hsl(0, 0%, 98%);
   --border: hsl(240, 3.7%, 15.9%);
   --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
+  --primary: hsl(45, 100%, 50%);
+  --primary-foreground: hsl(26, 83.3%, 14.1%);
   --secondary: hsl(240, 3.7%, 15.9%);
   --secondary-foreground: hsl(0, 0%, 98%);
   --accent: hsl(240, 3.7%, 15.9%);
@@ -45,7 +60,7 @@
   --destructive: hsl(0, 62.8%, 30.6%);
   --destructive-foreground: hsl(0, 0%, 98%);
   --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
+  --radius: 1rem;
 }
 
 @layer base {
@@ -54,6 +69,178 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 50%, #FFF3E0 100%);
+    font-family: 'Fredoka', 'Comic Neue', cursive;
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fredoka', 'Comic Neue', cursive;
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  /* Cartoon text styling */
+  .cartoon-text {
+    font-family: 'Fredoka', 'Comic Neue', cursive;
+    font-weight: 600;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cartoon-text-outline {
+    -webkit-text-stroke: 2px black;
+    -webkit-text-fill-color: white;
+    font-weight: 700;
+  }
+  
+  /* Cartoon button styles */
+  .cartoon-button {
+    @apply relative px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200;
+    border: 3px solid black;
+    box-shadow: 4px 4px 0px black;
+    transform: translateY(0px);
+    font-family: 'Fredoka', cursive;
+  }
+  
+  .cartoon-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0px black;
+  }
+  
+  .cartoon-button:active {
+    transform: translateY(2px);
+    box-shadow: 2px 2px 0px black;
+  }
+  
+  .cartoon-button-primary {
+    @apply cartoon-button;
+    background: linear-gradient(135deg, var(--tilesnap-blue), var(--tilesnap-teal));
+  }
+  
+  .cartoon-button-secondary {
+    @apply cartoon-button;
+    background: linear-gradient(135deg, var(--tilesnap-coral), var(--tilesnap-pink));
+  }
+  
+  .cartoon-button-success {
+    @apply cartoon-button;
+    background: linear-gradient(135deg, var(--tilesnap-mint), var(--tilesnap-lavender));
+  }
+  
+  .cartoon-button-warning {
+    @apply cartoon-button;
+    background: linear-gradient(135deg, var(--tilesnap-yellow), var(--tilesnap-orange));
+  }
+  
+  /* Cartoon card styles */
+  .cartoon-card {
+    @apply relative p-6 rounded-3xl bg-white;
+    border: 3px solid black;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.2);
+  }
+  
+  .cartoon-card-hover {
+    @apply cartoon-card transition-all duration-300;
+  }
+  
+  .cartoon-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Cartoon input styles */
+  .cartoon-input {
+    @apply px-4 py-3 rounded-2xl bg-white;
+    border: 3px solid black;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Fredoka', 'Comic Neue', cursive;
+  }
+  
+  .cartoon-input:focus {
+    @apply outline-none;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(255, 215, 0, 0.3);
+  }
+  
+  /* Animation classes */
+  .bounce-in {
+    animation: bounceIn 0.6s ease-out;
+  }
+  
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6);
+    }
+  }
+  
+  .wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+  
+  @keyframes wiggle {
+    0%, 7% {
+      transform: rotateZ(0);
+    }
+    15% {
+      transform: rotateZ(-15deg);
+    }
+    20% {
+      transform: rotateZ(10deg);
+    }
+    25% {
+      transform: rotateZ(-10deg);
+    }
+    30% {
+      transform: rotateZ(6deg);
+    }
+    35% {
+      transform: rotateZ(-4deg);
+    }
+    40%, 100% {
+      transform: rotateZ(0);
+    }
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--tilesnap-blue), var(--tilesnap-teal));
+  }
+  
+  .gradient-secondary {
+    background: linear-gradient(135deg, var(--tilesnap-coral), var(--tilesnap-pink));
+  }
+  
+  .gradient-accent {
+    background: linear-gradient(135deg, var(--tilesnap-yellow), var(--tilesnap-peach));
+  }
+  
+  .gradient-success {
+    background: linear-gradient(135deg, var(--tilesnap-mint), var(--tilesnap-lavender));
   }
 }

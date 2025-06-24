@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'wouter';
 import StepIndicator from '@/components/step-indicator';
 import MainImageUploader from '@/components/main-image-uploader';
 import SurroundingImagesUploader from '@/components/surrounding-images-uploader';
 import ImagePreview from '@/components/image-preview';
 import LoadingOverlay from '@/components/loading-overlay';
+import { TileSnapLogoCompact } from '@/components/tilesnap-logo';
 import { ImageData, QuadrantImage, SurroundingImages, FinalImage, StepNumber } from '@/types/image-types';
 import { createFinalImages } from '@/utils/image-processor';
 
@@ -75,23 +77,19 @@ export default function Home() {
 
   return (
     <>
-      <div className="font-sans bg-gray-50 min-h-screen">
+      <div className="min-h-screen">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <header className="cartoon-card mx-4 my-6 mb-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                  <i className="fab fa-twitter text-white text-lg"></i>
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">Twitter Tile Creator</h1>
-                  <p className="text-sm text-gray-500">Create expandable photo tiles</p>
-                </div>
+              <TileSnapLogoCompact size={50} />
+              <div className="flex items-center space-x-4">
+                <Link href="/">
+                  <button className="cartoon-button-secondary text-sm px-4 py-2">
+                    ← Back to Home
+                  </button>
+                </Link>
               </div>
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <i className="fas fa-question-circle text-lg"></i>
-              </button>
             </div>
           </div>
         </header>

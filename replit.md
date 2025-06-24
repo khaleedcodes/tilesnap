@@ -1,8 +1,16 @@
-# Twitter Photo Tile Creator
+# TileSnap - Crafting Stories, One Tile at a Time
 
 ## Overview
 
-This is a React TypeScript web application that helps users create expandable Twitter photo tiles. The app allows users to upload a main 16:9 image that gets split into 4 quadrants, along with 8 surrounding images that complement each quadrant. The final output is 4 optimized images ready for sequential Twitter posting to create an interactive tile effect.
+TileSnap is a fun, cartoon-styled React TypeScript web application that helps users create expandable Twitter photo tiles. The app allows users to upload a main 16:9 image that gets split into 4 quadrants, along with 8 surrounding images that complement each quadrant. The final output is 4 optimized images ready for sequential Twitter posting to create an interactive tile effect.
+
+## Brand Identity
+
+**Name**: TileSnap  
+**Tagline**: "Crafting Stories, One Tile at a Time"  
+**Design Style**: Cartoon aesthetic with bold black outlines, bright colors, and playful fonts  
+**Color Palette**: Vibrant blues, yellows, corals, teals, mints, and purples  
+**Typography**: Fredoka and Comic Neue for a friendly, approachable feel
 
 ## System Architecture
 
@@ -82,11 +90,14 @@ This is a React TypeScript web application that helps users create expandable Tw
 - **Schema**: User management schema defined but not yet implemented
 
 ## Recent Changes
-- June 24, 2025: Added interactive image cropping for surrounding images with 16:9 aspect ratio lock
-- June 24, 2025: Implemented automatic crop-on-upload and manual re-crop functionality
-- June 24, 2025: Updated final image dimensions to 1214×2048px for proper Twitter tile format
-- June 24, 2025: Implemented three-section vertical stacking (683px each) for expandable tiles
-- June 24, 2025: Initial setup and core functionality complete
+- June 24, 2025: Complete cartoon-style rebrand to "TileSnap" with new logo and styling
+- June 24, 2025: Created dynamic landing page with URL query parameter support (?via=beg3)
+- June 24, 2025: Implemented cartoon UI elements with bold outlines, bright colors, and animations
+- June 24, 2025: Added custom TileSnap logo as SVG React component
+- June 24, 2025: Enhanced image cropping with zoom controls and improved UX
+- June 24, 2025: Updated all components with cartoon button and card styles
+- June 24, 2025: Implemented Fredoka and Comic Neue fonts for playful typography
+- June 24, 2025: Added landing page routing with personalized greetings
 
 ## Changelog
 - June 24, 2025. Initial setup

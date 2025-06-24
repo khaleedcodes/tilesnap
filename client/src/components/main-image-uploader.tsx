@@ -138,10 +138,10 @@ export default function MainImageUploader({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+    <div className="cartoon-card-hover">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Upload Your Main Image</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold cartoon-text text-gray-900 mb-3">Upload Your Main Image 🖼️</h2>
+        <p className="text-gray-700 text-lg max-w-2xl mx-auto">
           This image will be split into 4 quadrants to create the expandable tile effect.
           Choose a high-quality 16:9 image (1214×683px recommended).
         </p>
@@ -151,11 +151,11 @@ export default function MainImageUploader({
         {!mainImage ? (
           <div
             {...getRootProps()}
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer ${
+            className={`border-3 border-dashed rounded-2xl p-8 text-center transition-all duration-300 cursor-pointer ${
               isDragActive
-                ? 'border-blue-400 bg-blue-50'
-                : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
-            }`}
+                ? 'border-blue-500 bg-blue-50 scale-105'
+                : 'border-gray-400 hover:border-blue-400 hover:bg-blue-50'
+            } border-black`}
           >
             <input {...getInputProps()} />
             <div className="mb-4">
@@ -170,7 +170,7 @@ export default function MainImageUploader({
               </p>
               <button
                 type="button"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="cartoon-button-primary px-6 py-3 disabled:opacity-50"
                 disabled={isProcessing}
               >
                 {isProcessing ? (
@@ -248,11 +248,10 @@ export default function MainImageUploader({
       <div className="flex justify-end mt-8">
         <button
           onClick={handleNext}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors flex items-center disabled:opacity-50"
+          className="cartoon-button-primary text-lg px-8 py-4 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!mainImage || !quadrants?.length || isProcessing}
         >
-          Next: Surrounding Images
-          <i className="fas fa-arrow-right ml-2"></i>
+          Next: Surrounding Images ➡️
         </button>
       </div>
 

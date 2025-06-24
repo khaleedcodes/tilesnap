@@ -1,0 +1,78 @@
+I want you to generate a fully functional and well-organized web app using React with TypeScript and TailwindCSS.
+
+This app should help users easily create a "Twitter Photo Tile" layout, based on the process described below:
+
+🔄 App Purpose:
+The app should let users upload nine 16:9 images:
+
+One main image that will be split into 4 quadrants (Top Left, Top Right, Bottom Left, Bottom Right).
+
+Eight other images that will be placed above and below each quadrant in the final post.
+
+Once all images are uploaded and cropped, the app should generate four images, ready to be uploaded to Twitter in the correct order to create an interactive, expandable tile effect.
+
+🧠 Key Features:
+Stack: React + TypeScript + TailwindCSS
+
+Clean file structure: Only the basics:
+
+components/ (individual, focused UI components)
+
+pages/ (route-level views)
+
+utils/ (helper functions if needed)
+
+types/ (for TypeScript types)
+
+No shared/global component files or unnecessary boilerplate
+
+💡 UI Flow:
+Step-by-step uploader with guidance:
+
+Ask the user for the main image first (to be split into 4 quadrants).
+
+Then guide them to upload each of the 8 surrounding images (e.g. "Upload top-left surrounding image", etc.).
+
+Provide clear image slot labels (visual or text) to eliminate confusion.
+
+Cropping logic (automated):
+
+Automatically slice the main image into 4 quadrant images.
+
+Ensure images are resized or validated to 1214×683 pixels (16:9).
+
+Preview mode:
+
+Allow users to preview the 4 final images before exporting.
+
+Export:
+
+Export all 4 images with correct naming convention:
+01_TopLeft.jpg, 02_TopRight.jpg, 03_BottomLeft.jpg, 04_BottomRight.jpg
+
+Bundle them into a .zip or provide individual download buttons.
+
+🪄 Bonus Features (if time permits):
+Toggle: "Use Reveal Mode" – gives the option to treat the main image as the expandable one.
+
+Optional helper text on how to post the images to Twitter for best results.
+
+🎨 Design & UX:
+The UI should feel fluid like a mobile app:
+
+Use soft shadows, rounded corners, grid layouts, and proper padding.
+
+Buttons and inputs should be easily tappable on mobile.
+
+Very responsive design using TailwindCSS breakpoints.
+
+Keep interface minimal, intuitive, and user-friendly.
+
+Avoid over-complicating the layout — clean and clear components.
+
+✅ Final Notes:
+Please keep all logic, UI, and data well organized and easy to read/edit.
+
+Use descriptive naming for components and keep code maintainable.
+
+Prioritize UX clarity and simplicity — assume the user is not technical.

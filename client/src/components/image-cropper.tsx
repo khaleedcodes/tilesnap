@@ -141,39 +141,49 @@ export default function ImageCropper({
       if (!resizeHandle) return;
 
       let newCrop = { ...cropArea };
-      const minSize = 50; // Minimum crop size
+      const minSize = 100; // Minimum crop size in display pixels
 
       switch (resizeHandle) {
-        case "se": // Bottom-right corner
+        case "se": // Bottom-right corner - resize from top-left anchor
           const newWidth = Math.max(minSize, mouseX - cropArea.x);
           newCrop.width = newWidth;
           newCrop.height = newWidth / ASPECT_RATIO;
           break;
-        case "sw": // Bottom-left corner
-          const deltaX = cropArea.x - mouseX;
-          const newWidthSW = Math.max(minSize, cropArea.width + deltaX);
-          newCrop.x = cropArea.x + cropArea.width - newWidthSW;
-          newCrop.width = newWidthSW;
-          newCrop.height = newWidthSW / ASPECT_RATIO;
+
+        case "sw": // Bottom-left corner - resize from top-right anchor
+          const newX = Math.min(mouseX, cropArea.x + cropArea.width - minSize);
+          newCrop.x = newX;
+          newCrop.width = cropArea.x + cropArea.width - newX;
+          newCrop.height = newCrop.width / ASPECT_RATIO;
           break;
-        case "ne": // Top-right corner
-          const deltaY = cropArea.y - mouseY;
-          const newHeightNE = Math.max(
-            minSize / ASPECT_RATIO,
-            cropArea.height + deltaY
+
+        case "ne": // Top-right corner - resize from bottom-left anchor
+          const newY = Math.min(
+            mouseY,
+            cropArea.y + cropArea.height - minSize / ASPECT_RATIO
           );
-          const newWidthNE = newHeightNE * ASPECT_RATIO;
-          newCrop.y = cropArea.y + cropArea.height - newHeightNE;
+          const newWidthNE = Math.max(minSize, mouseX - cropArea.x);
+          newCrop.y = newY;
           newCrop.width = newWidthNE;
-          newCrop.height = newHeightNE;
+          newCrop.height = newWidthNE / ASPECT_RATIO;
+          // Adjust Y to maintain bottom-left anchor
+          newCrop.y = cropArea.y + cropArea.height - newCrop.height;
           break;
-        case "nw": // Top-left corner
-          const deltaXNW = cropArea.x - mouseX;
-          const deltaYNW = cropArea.y - mouseY;
-          const newWidthNW = Math.max(minSize, cropArea.width + deltaXNW);
-          newCrop.x = cropArea.x + cropArea.width - newWidthNW;
-          newCrop.width = newWidthNW;
-          newCrop.height = newWidthNW / ASPECT_RATIO;
+
+        case "nw": // Top-left corner - resize from bottom-right anchor
+          const newXNW = Math.min(
+            mouseX,
+            cropArea.x + cropArea.width - minSize
+          );
+          const newYNW = Math.min(
+            mouseY,
+            cropArea.y + cropArea.height - minSize / ASPECT_RATIO
+          );
+          newCrop.x = newXNW;
+          newCrop.y = newYNW;
+          newCrop.width = cropArea.x + cropArea.width - newXNW;
+          newCrop.height = newCrop.width / ASPECT_RATIO;
+          // Adjust Y to maintain bottom-right anchor
           newCrop.y = cropArea.y + cropArea.height - newCrop.height;
           break;
       }
@@ -187,19 +197,23 @@ export default function ImageCropper({
   const handleMouseDown = (e: React.MouseEvent, handle?: string) => {
     if (!imageLoaded) return;
     e.preventDefault();
+    e.stopPropagation();
+
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
     if (handle) {
       setIsResizing(true);
       setResizeHandle(handle);
+      setDragStart({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
     } else {
       setIsDragging(true);
-    }
-
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (rect) {
       setDragStart({
-        x: e.clientX - rect.left - (handle ? 0 : cropArea.x),
-        y: e.clientY - rect.top - (handle ? 0 : cropArea.y),
+        x: e.clientX - rect.left - cropArea.x,
+        y: e.clientY - rect.top - cropArea.y,
       });
     }
   };
@@ -240,28 +254,56 @@ export default function ImageCropper({
   const handleTouchStart = (e: React.TouchEvent, handle?: string) => {
     if (!imageLoaded || e.touches.length !== 1) return;
     e.preventDefault();
+    e.stopPropagation();
 
     const touch = e.touches[0];
-    const mouseEvent = {
-      clientX: touch.clientX,
-      clientY: touch.clientY,
-      preventDefault: () => {},
-    } as React.MouseEvent;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-    handleMouseDown(mouseEvent, handle);
+    if (handle) {
+      setIsResizing(true);
+      setResizeHandle(handle);
+      setDragStart({
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
+      });
+    } else {
+      setIsDragging(true);
+      setDragStart({
+        x: touch.clientX - rect.left - cropArea.x,
+        y: touch.clientY - rect.top - cropArea.y,
+      });
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!imageLoaded || e.touches.length !== 1) return;
+    if (!imageLoaded || e.touches.length !== 1 || (!isDragging && !isResizing))
+      return;
     e.preventDefault();
+    e.stopPropagation();
 
     const touch = e.touches[0];
-    const mouseEvent = {
-      clientX: touch.clientX,
-      clientY: touch.clientY,
-    } as React.MouseEvent;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-    handleMouseMove(mouseEvent);
+    const mouseX = touch.clientX - rect.left;
+    const mouseY = touch.clientY - rect.top;
+
+    if (isDragging) {
+      const newX = mouseX - dragStart.x;
+      const newY = mouseY - dragStart.y;
+
+      const constrainedCrop = constrainCropArea({
+        x: newX,
+        y: newY,
+        width: cropArea.width,
+        height: cropArea.height,
+      });
+
+      setCropArea(constrainedCrop);
+    } else if (isResizing) {
+      handleResize(mouseX, mouseY);
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -377,13 +419,13 @@ export default function ImageCropper({
                     📏 16:9 Aspect Ratio Lock
                   </p>
                   <p className="hidden sm:block">
-                    Drag the crop area to reposition it. Use corner handles to
-                    resize. The aspect ratio will automatically maintain 16:9
-                    for optimal Twitter tiles.
+                    Drag the blue crop area to reposition it. Pull the corner
+                    handles to resize while maintaining 16:9 ratio for optimal
+                    Twitter tiles.
                   </p>
                   <p className="sm:hidden">
-                    Drag to reposition, use corners to resize. 16:9 ratio locked
-                    for Twitter.
+                    Drag crop area to move, pull corners to resize. 16:9 ratio
+                    locked.
                   </p>
                 </div>
 
@@ -395,7 +437,7 @@ export default function ImageCropper({
                   onMouseLeave={handleMouseUp}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
-                  style={{ touchAction: "none" }}
+                  style={{ touchAction: "none", userSelect: "none" }}
                 >
                   {imageData.src && (
                     <div className="relative max-w-full max-h-full">
@@ -420,6 +462,7 @@ export default function ImageCropper({
                             top: cropArea.y,
                             width: cropArea.width,
                             height: cropArea.height,
+                            touchAction: "none",
                           }}
                           onMouseDown={(e) => handleMouseDown(e)}
                           onTouchStart={(e) => handleTouchStart(e)}
@@ -436,26 +479,30 @@ export default function ImageCropper({
                             ))}
                           </div>
 
-                          {/* Resize handles */}
+                          {/* Resize handles with better event handling */}
                           <div
-                            className="absolute -top-1 -left-1 w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 border-2 border-white cursor-nw-resize hover:bg-blue-600 transition-colors"
+                            className="absolute -top-1 -left-1 w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 border-2 border-white cursor-nw-resize hover:bg-blue-600 transition-colors rounded-sm z-10"
                             onMouseDown={(e) => handleMouseDown(e, "nw")}
                             onTouchStart={(e) => handleTouchStart(e, "nw")}
+                            style={{ touchAction: "none" }}
                           ></div>
                           <div
-                            className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 border-2 border-white cursor-ne-resize hover:bg-blue-600 transition-colors"
+                            className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 border-2 border-white cursor-ne-resize hover:bg-blue-600 transition-colors rounded-sm z-10"
                             onMouseDown={(e) => handleMouseDown(e, "ne")}
                             onTouchStart={(e) => handleTouchStart(e, "ne")}
+                            style={{ touchAction: "none" }}
                           ></div>
                           <div
-                            className="absolute -bottom-1 -left-1 w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 border-2 border-white cursor-sw-resize hover:bg-blue-600 transition-colors"
+                            className="absolute -bottom-1 -left-1 w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 border-2 border-white cursor-sw-resize hover:bg-blue-600 transition-colors rounded-sm z-10"
                             onMouseDown={(e) => handleMouseDown(e, "sw")}
                             onTouchStart={(e) => handleTouchStart(e, "sw")}
+                            style={{ touchAction: "none" }}
                           ></div>
                           <div
-                            className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 border-2 border-white cursor-se-resize hover:bg-blue-600 transition-colors"
+                            className="absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 border-2 border-white cursor-se-resize hover:bg-blue-600 transition-colors rounded-sm z-10"
                             onMouseDown={(e) => handleMouseDown(e, "se")}
                             onTouchStart={(e) => handleTouchStart(e, "se")}
+                            style={{ touchAction: "none" }}
                           ></div>
 
                           {/* Center indicator */}

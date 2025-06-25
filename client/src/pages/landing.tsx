@@ -169,7 +169,7 @@ export default function Landing() {
           </div>
 
           {/* Testimonial */}
-          <div className="cartoon-card mt-12 bg-gradient-to-r from-yellow-50 to-orange-50">
+          {/* <div className="cartoon-card mt-12 bg-gradient-to-r from-yellow-50 to-orange-50">
             <div className="text-center space-y-4">
               <p className="text-lg italic text-gray-700">
                 "TileSnap made creating engaging Twitter content so much easier!
@@ -184,7 +184,7 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Final CTA */}
           <div className="pt-8">

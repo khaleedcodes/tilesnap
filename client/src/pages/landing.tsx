@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'wouter';
-import TileSnapLogo from '@/components/tilesnap-logo';
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import TileSnapLogo from "@/components/tilesnap-logo";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -8,7 +8,7 @@ export default function Landing() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const via = urlParams.get('via');
+    const via = urlParams.get("via");
     setViaParam(via);
   }, []);
 
@@ -17,35 +17,35 @@ export default function Landing() {
       return {
         title: "Welcome to TileSnap!",
         subtitle: "Create Amazing Twitter Photo Tiles",
-        cta: "Start Crafting Your Tiles"
+        cta: "Start Crafting Your Tiles",
       };
     }
 
     // Handle specific via parameters
     switch (viaParam.toLowerCase()) {
-      case 'beg3':
+      case "beg3":
         return {
-          title: "Get Creative with Beg 3!",
+          title: "Get Creative with Beg3!",
           subtitle: "Turn Your Images into Stunning Twitter Tiles",
-          cta: "Start Crafting Your Tile"
+          cta: "Start Crafting Your Tile",
         };
-      case 'twitter':
+      case "twitter":
         return {
           title: "From Twitter to TileSnap!",
           subtitle: "Create Engaging Photo Tiles That Stand Out",
-          cta: "Begin Your Story"
+          cta: "Begin Your Story",
         };
-      case 'social':
+      case "social":
         return {
           title: "Social Media Magic Awaits!",
           subtitle: "Transform Your Content with TileSnap",
-          cta: "Create Your First Tile"
+          cta: "Create Your First Tile",
         };
       default:
         return {
           title: `Welcome from ${viaParam}!`,
           subtitle: "Ready to Create Something Amazing?",
-          cta: "Start Your Journey"
+          cta: "Start Your Journey",
         };
     }
   };
@@ -77,7 +77,7 @@ export default function Landing() {
           {/* Main CTA */}
           <div className="space-y-4">
             <button
-              onClick={() => setLocation('/app')}
+              onClick={() => setLocation("/app")}
               className="cartoon-button-primary text-xl sm:text-2xl px-8 py-4 pulse-glow"
             >
               {greeting.cta}
@@ -96,7 +96,7 @@ export default function Landing() {
                 </div>
                 <h3 className="text-lg font-bold cartoon-text">Easy Upload</h3>
                 <p className="text-gray-600">
-                  Simply drag and drop your 16:9 image and we'll handle the rest!
+                  Simply upload your images and we'll handle the rest!
                 </p>
               </div>
             </div>
@@ -106,9 +106,12 @@ export default function Landing() {
                 <div className="w-16 h-16 mx-auto gradient-secondary rounded-full flex items-center justify-center border-3 border-black">
                   <span className="text-2xl">✂️</span>
                 </div>
-                <h3 className="text-lg font-bold cartoon-text">Smart Cropping</h3>
+                <h3 className="text-lg font-bold cartoon-text">
+                  Smart Cropping
+                </h3>
                 <p className="text-gray-600">
-                  Advanced cropping tools with zoom and positioning controls for perfect tiles.
+                  Advanced cropping tools with zoom and positioning controls for
+                  perfect tiles.
                 </p>
               </div>
             </div>
@@ -118,9 +121,12 @@ export default function Landing() {
                 <div className="w-16 h-16 mx-auto gradient-success rounded-full flex items-center justify-center border-3 border-black">
                   <span className="text-2xl">📱</span>
                 </div>
-                <h3 className="text-lg font-bold cartoon-text">Twitter Ready</h3>
+                <h3 className="text-lg font-bold cartoon-text">
+                  Twitter Ready
+                </h3>
                 <p className="text-gray-600">
-                  Export perfectly sized 1214×2048px images optimized for Twitter tiles.
+                  Export perfectly sized 1214×2048px images optimized for
+                  Twitter tiles.
                 </p>
               </div>
             </div>
@@ -128,14 +134,17 @@ export default function Landing() {
 
           {/* How It Works */}
           <div className="cartoon-card mt-16 text-left max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold cartoon-text mb-6 text-center">How TileSnap Works</h2>
+            <h2 className="text-2xl font-bold cartoon-text mb-6 text-center">
+              How TileSnap Works
+            </h2>
             <div className="space-y-4">
               <div className="flex items-start space-x-4">
                 <div className="w-8 h-8 gradient-accent rounded-full flex items-center justify-center border-2 border-black font-bold flex-shrink-0">
                   1
                 </div>
                 <p className="text-gray-700">
-                  <strong>Upload your main image</strong> - Choose any 16:9 image that you want to turn into an expandable tile
+                  <strong>Upload your main image</strong> - Choose any image
+                  that you want to turn into an expandable tile
                 </p>
               </div>
               <div className="flex items-start space-x-4">
@@ -143,7 +152,8 @@ export default function Landing() {
                   2
                 </div>
                 <p className="text-gray-700">
-                  <strong>Add surrounding images</strong> - Upload 8 additional images to complement each quadrant of your main image
+                  <strong>Add surrounding images</strong> - Upload 8 additional
+                  images to complement each quadrant of your main image
                 </p>
               </div>
               <div className="flex items-start space-x-4">
@@ -151,7 +161,8 @@ export default function Landing() {
                   3
                 </div>
                 <p className="text-gray-700">
-                  <strong>Download and share</strong> - Get 4 perfectly sized images ready for sequential Twitter posting
+                  <strong>Download and share</strong> - Get 4 perfectly sized
+                  images ready for sequential Twitter posting
                 </p>
               </div>
             </div>
@@ -161,8 +172,9 @@ export default function Landing() {
           <div className="cartoon-card mt-12 bg-gradient-to-r from-yellow-50 to-orange-50">
             <div className="text-center space-y-4">
               <p className="text-lg italic text-gray-700">
-                "TileSnap made creating engaging Twitter content so much easier! 
-                The expandable tiles get way more engagement than regular posts."
+                "TileSnap made creating engaging Twitter content so much easier!
+                The expandable tiles get way more engagement than regular
+                posts."
               </p>
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full border-2 border-black"></div>
@@ -177,7 +189,7 @@ export default function Landing() {
           {/* Final CTA */}
           <div className="pt-8">
             <button
-              onClick={() => setLocation('/app')}
+              onClick={() => setLocation("/app")}
               className="cartoon-button-secondary text-lg px-6 py-3"
             >
               Ready to Create? Let's Go!
@@ -188,10 +200,12 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="py-8 px-4 text-center text-gray-600">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-sm">
-            Made with ❤️ for creators everywhere • 
-            <span className="font-semibold"> TileSnap</span> - Crafting Stories, One Tile at a Time
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
+          <p className="text-lg">
+            Made with 🧃 by{" "}
+            <a href="https://x.com/scarfacebams" className="font-semibold">
+              bams
+            </a>
           </p>
         </div>
       </footer>

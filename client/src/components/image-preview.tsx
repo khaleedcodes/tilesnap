@@ -318,11 +318,14 @@ export default function ImagePreview({
               <h4 className="font-semibold text-amber-900 mb-2">
                 How to Post on Twitter
               </h4>
-              <ol className="text-sm text-amber-800 space-y-1 list-decimal list-inside">
-                <li>Post the first image with your caption</li>
-                <li>Reply to your tweet with the second image</li>
-                <li>Reply to that tweet with the third image</li>
-                <li>Reply to that tweet with the fourth image</li>
+              <p className="text-sm text-amber-800 mb-2">
+                Please select and upload your images in the following order:
+              </p>
+              <ol className="text-sm text-amber-800 space-y-1 list-inside">
+                <li>1_TopLeft...</li>
+                <li>3_BottomLeft...</li>
+                <li>2_TopRight...</li>
+                <li>4_BottomRight...</li>
               </ol>
               <p className="text-xs text-amber-700 mt-2">
                 This creates an expandable tile effect where users can tap

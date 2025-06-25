@@ -55,19 +55,19 @@ export default function Landing() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="relative py-6 px-4 sm:px-6 lg:px-8">
+      <header className="fixed py-6 px-4 sm:px-6 lg:px-8 z-10">
         <div className="max-w-7xl mx-auto">
           <TileSnapLogo size={60} className="justify-center sm:justify-start" />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 -mt-20">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 mt-24">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           {/* Hero Section */}
           <div className="space-y-6 bounce-in">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold cartoon-text">
-              <span className="inline-block wiggle">{greeting.title}</span>
+              <span className="inline-block">{greeting.title}</span>
             </h1>
             <p className="text-xl sm:text-2xl text-gray-700 cartoon-text max-w-2xl mx-auto">
               {greeting.subtitle}

@@ -8,6 +8,7 @@ import { pageVariants, createAccessibleVariants } from "@/lib/animations";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
+import AnalyticsTracker from "./components/AnalyticsTracker";
 
 function Router() {
   const [location] = useLocation();
@@ -37,6 +38,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <AnalyticsTracker />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>
